@@ -59,6 +59,7 @@ export default {
 
         this.$router.push({ name: "Menu" });
       } catch (error) {
+        console.log(error); 
         this.errorMessage = error.response?.data?.error || "Login failed. Please try again.";
       }
     },

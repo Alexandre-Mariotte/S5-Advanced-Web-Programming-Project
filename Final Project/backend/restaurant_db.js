@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-const con = mysql.createConnection({
+const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '0000', // Replace with your MySQL password
@@ -42,15 +42,16 @@ app.get("/dishes", (req, res) => {
 
 // Endpoint to handle login
 app.post('/login', (req, res) => {
+  console.log("POST /login called");
     const { username, password } = req.body;
   
     const loginQuery = `
-      SELECT 
-        CASE 
-          WHEN EXISTS (SELECT * FROM Manager WHERE ManagerName = ? AND ManagerPassword = ?) THEN 'admin'
-          WHEN EXISTS (SELECT * FROM Waiter WHERE waiterName = ? AND waiterPassword = ?) THEN 'user'
-          ELSE NULL
-        END AS role
+     SELECT 'admin' AS role FROM Manager 
+WHERE ManagerName = ? AND ManagerPassword = ?
+UNION
+SELECT 'user' AS role FROM Waiter 
+WHERE waiterName = ? AND waiterPassword = ?;
+
     `;
   
     db.query(loginQuery, [username, password, username, password], (err, results) => {
